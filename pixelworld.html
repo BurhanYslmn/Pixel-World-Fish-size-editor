@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pixel World Fish Caught LBS Editor (HD & Sürükle-Bırak)</title>
+    <title>Pixel World Fish Caught LBS Editor</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&family=Ubuntu+Mono:wght@700&display=swap" rel="stylesheet">
@@ -37,8 +37,8 @@
                     <i class="fa-solid fa-fish-fins text-xl animate-bounce"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Pixel WOrld Fish Caught LBS Editor</h1>
-                    <p class="text-xs text-slate-400 font-medium font-mono">Görsel üzerindeki yazıları sürükleyip bırakarak veya elle düzenleyin</p>
+                    <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Pixel World Fish Caught LBS Editor</h1>
+                    <p class="text-xs text-slate-400 font-medium font-mono">Edit text overlays on your screenshot by dragging or typing</p>
                 </div>
             </div>
             <div class="flex items-center gap-3">
@@ -49,6 +49,8 @@
         </div>
     </header>
 
+    <!-- file:// warning banner removed per user request -->
+
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         <!-- Sol Panel: Kontroller -->
@@ -57,15 +59,15 @@
             <!-- Görsel Kaynağı Seçimi -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-file-image text-blue-400"></i> 1. Görsel Ayarı
+                    <i class="fa-solid fa-file-image text-blue-400"></i> 1. Image Settings
                 </h2>
                 <div class="flex flex-col gap-3">
                     <div class="grid grid-cols-2 gap-2">
                         <button id="btn-load-default" class="px-3 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-bold rounded-xl border border-slate-800 hover:border-slate-700 transition-all flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-rotate-left text-blue-400"></i> Varsayılana Dön
+                            <i class="fa-solid fa-rotate-left text-blue-400"></i> Reset to Default
                         </button>
                         <button id="btn-load-fallback" class="px-3 py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 text-xs font-bold rounded-xl border border-blue-500/20 hover:border-blue-500/30 transition-all flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-wand-magic-sparkles"></i> Şablon Çiz (1080p)
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Draw Template (1080p)
                         </button>
                     </div>
                     
@@ -73,8 +75,9 @@
                         <input type="file" id="image-uploader" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
                         <div class="flex flex-col items-center justify-center gap-1">
                             <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-500 group-hover:text-blue-400 transition-colors"></i>
-                            <span class="text-xs font-semibold text-slate-300 group-hover:text-slate-100">Kendi Ekran Görüntünü Yükle veya Buraya Bırak</span>
+                            <span class="text-xs font-semibold text-slate-300 group-hover:text-slate-100">Upload your screenshot or drop here</span>
                         </div>
+                        <div id="upload-status" class="mt-3 text-xs text-slate-300"></div>
                     </div>
                 </div>
             </div>
@@ -82,19 +85,19 @@
             <!-- Değerleri Düzenleme Alanı -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
                 <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-indigo-400"></i> 2. Değerleri Değiştir
+                    <i class="fa-solid fa-sliders text-indigo-400"></i> 2. Edit Values
                 </h2>
 
                 <!-- Ana Ağırlık Alanı -->
                 <div class="bg-slate-900/40 p-4 border border-slate-800/60 rounded-xl flex flex-col gap-3">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-2">
                         <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Ana Balık Ağırlığı
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Main Fish Weight
                         </span>
                         <span class="text-[10px] text-slate-500 font-mono">ORTA KUTU</span>
                     </div>
                     <div>
-                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Yeni Ağırlık (LBS):</label>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">New Weight (LBS):</label>
                         <div class="flex gap-2">
                             <input type="text" id="input-main-weight" value="98.75" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-blue-500 w-full font-mono">
                             <span class="bg-slate-800 px-3 py-2 text-xs font-bold text-slate-400 rounded-lg flex items-center justify-center">lbs</span>
@@ -103,42 +106,42 @@
 
                     <div class="grid grid-cols-2 gap-2 mt-1">
                         <div>
-                            <label class="text-[10px] text-slate-400 block mb-1">Maske Rengi:</label>
+                            <label class="text-[10px] text-slate-400 block mb-1">Mask Color:</label>
                             <input type="color" id="main-mask-color" value="#0c1b2d" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
                         </div>
                         <div>
-                            <label class="text-[10px] text-slate-400 block mb-1">Yazı Rengi:</label>
+                            <label class="text-[10px] text-slate-400 block mb-1">Text Color:</label>
                             <input type="color" id="main-text-color" value="#ffffff" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
                         </div>
                     </div>
                     
                     <details class="group mt-1" open>
                         <summary class="text-[11px] font-bold text-slate-500 hover:text-slate-300 cursor-pointer list-none flex items-center gap-1">
-                            <i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform text-[8px]"></i> Konum & Boyut Ayarı
+                            <i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform text-[8px]"></i> Position & Size
                         </summary>
                         <div class="pt-3 grid grid-cols-2 gap-3 border-t border-slate-800/50 mt-2">
                             <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Yatay (X)</label>
+                                <label class="text-[10px] text-slate-400 block mb-1">Horizontal (X)</label>
                                 <input type="range" id="main-x" min="0" max="1024" value="503" class="w-full accent-blue-500">
                                 <span class="text-[9px] font-mono text-slate-500" id="val-main-x">503</span>
                             </div>
                             <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Dikey (Y)</label>
+                                <label class="text-[10px] text-slate-400 block mb-1">Vertical (Y)</label>
                                 <input type="range" id="main-y" min="0" max="576" value="315" class="w-full accent-blue-500">
                                 <span class="text-[9px] font-mono text-slate-500" id="val-main-y">315</span>
                             </div>
                             <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Maske Eni</label>
+                                <label class="text-[10px] text-slate-400 block mb-1">Mask Width</label>
                                 <input type="range" id="main-mask-w" min="10" max="400" value="94" class="w-full accent-blue-500">
                                 <span class="text-[9px] font-mono text-slate-500" id="val-main-mask-w">94</span>
                             </div>
                             <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Maske Boyu</label>
+                                <label class="text-[10px] text-slate-400 block mb-1">Mask Height</label>
                                 <input type="range" id="main-mask-h" min="5" max="100" value="24" class="w-full accent-blue-500">
                                 <span class="text-[9px] font-mono text-slate-500" id="val-main-mask-h">24</span>
                             </div>
                             <div class="col-span-2">
-                                <label class="text-[10px] text-slate-400 block mb-1">Yazı Boyutu</label>
+                                <label class="text-[10px] text-slate-400 block mb-1">Font Size</label>
                                 <input type="range" id="main-font-size" min="6" max="60" value="13" class="w-full accent-blue-500">
                                 <span class="text-[9px] font-mono text-slate-500" id="val-main-font-size">13px</span>
                             </div>
@@ -146,69 +149,7 @@
                     </details>
                 </div>
 
-                <!-- Alt Rekor Şeridi Alanı -->
-                <div class="bg-slate-900/40 p-4 border border-slate-800/60 rounded-xl flex flex-col gap-3">
-                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
-                        <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Rekor Şeridi (Kişisel & Dünya)
-                        </span>
-                        <span class="text-[10px] text-slate-500 font-mono">ALT ŞERİT</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Kişisel (PR):</label>
-                            <input type="text" id="input-pr-weight" value="86,13" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-indigo-500 w-full font-mono">
-                        </div>
-                        <div>
-                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Dünya (WR):</label>
-                            <input type="text" id="input-wr-weight" value="102,86" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-indigo-500 w-full font-mono">
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-2 mt-1">
-                        <div>
-                            <label class="text-[10px] text-slate-400 block mb-1">Maske Rengi:</label>
-                            <input type="color" id="record-mask-color" value="#0d1c2e" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-400 block mb-1">Yazı Rengi:</label>
-                            <input type="color" id="record-text-color" value="#99b2cd" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
-                        </div>
-                    </div>
-                    
-                    <details class="group mt-1">
-                        <summary class="text-[11px] font-bold text-slate-500 hover:text-slate-300 cursor-pointer list-none flex items-center gap-1">
-                            <i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform text-[8px]"></i> Konum & Boyut Ayarı
-                        </summary>
-                        <div class="pt-3 grid grid-cols-2 gap-3 border-t border-slate-800/50 mt-2">
-                            <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Yatay (X)</label>
-                                <input type="range" id="record-x" min="0" max="1024" value="503" class="w-full accent-indigo-500">
-                                <span class="text-[9px] font-mono text-slate-500" id="val-record-x">503</span>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Dikey (Y)</label>
-                                <input type="range" id="record-y" min="0" max="576" value="353" class="w-full accent-indigo-500">
-                                <span class="text-[9px] font-mono text-slate-500" id="val-record-y">353</span>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Maske Eni</label>
-                                <input type="range" id="record-mask-w" min="50" max="800" value="272" class="w-full accent-indigo-500">
-                                <span class="text-[9px] font-mono text-slate-500" id="val-record-mask-w">272</span>
-                            </div>
-                            <div>
-                                <label class="text-[10px] text-slate-400 block mb-1">Maske Boyu</label>
-                                <input type="range" id="record-mask-h" min="5" max="80" value="16" class="w-full accent-indigo-500">
-                                <span class="text-[9px] font-mono text-slate-500" id="val-record-mask-h">16</span>
-                            </div>
-                            <div class="col-span-2">
-                                <label class="text-[10px] text-slate-400 block mb-1">Yazı Boyutu</label>
-                                <input type="range" id="record-font-size" min="6" max="40" value="9" class="w-full accent-indigo-500">
-                                <span class="text-[9px] font-mono text-slate-500" id="val-record-font-size">9px</span>
-                            </div>
-                        </div>
-                    </details>
-                </div>
+                <!-- Alt Rekor Şeridi (kaldırıldı) -->
 
                 <!-- Yazı Tipi & Efektler -->
                 <div class="bg-slate-900/20 p-4 border border-slate-800/50 rounded-xl flex flex-col gap-3">
@@ -241,12 +182,12 @@
                 <div class="flex flex-wrap justify-between items-center pb-3 border-b border-slate-800 mb-4 gap-2">
                     <div class="flex items-center gap-2">
                         <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
-                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Önizleme (Canlı Sürükle ve Bırak)</h3>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Preview (Live Drag & Drop)</h3>
                     </div>
                     <div class="flex items-center gap-4">
                         <label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-300">
                             <input type="checkbox" id="toggle-guides" checked class="w-4 h-4 rounded text-blue-600 bg-slate-900 border-slate-700 focus:ring-blue-500">
-                            Düzenleme Maskelerini Göster
+                            Show Edit Guides
                         </label>
                     </div>
                 </div>
@@ -258,7 +199,7 @@
                                 <i class="fa-solid fa-magnifying-glass-minus"></i>
                             </button>
                             <button id="btn-zoom-fit" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition-colors">
-                                Sığdır
+                                Fit
                             </button>
                             <button id="btn-zoom-reset" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition-colors">
                                 1:1
@@ -303,15 +244,15 @@
             <!-- Alt Kısım: Aksiyonlar -->
             <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-wrap gap-4 items-center justify-between">
                 <div>
-                    <span class="text-xs font-bold text-slate-300 block">Düzenleme bitti mi?</span>
-                    <span class="text-[11px] text-slate-500">Aşağıdaki butonları kullanarak HD olarak kaydedebilirsiniz.</span>
+                    <span class="text-xs font-bold text-slate-300 block">Finished editing?</span>
+                    <span class="text-[11px] text-slate-500">Use the buttons below to save in HD.</span>
                 </div>
                 <div class="flex items-center gap-3 flex-wrap">
                     <button id="btn-copy-clipboard" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-xs rounded-xl transition-all flex items-center gap-2 border border-slate-700">
-                        <i class="fa-solid fa-copy"></i> Panoya Kopyala
+                        <i class="fa-solid fa-copy"></i> Copy to Clipboard
                     </button>
                     <button id="btn-download" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:scale-[1.02]">
-                        <i class="fa-solid fa-download"></i> Düzenlenmiş Görseli İndir
+                        <i class="fa-solid fa-download"></i> Download Edited Image
                     </button>
                 </div>
             </div>
@@ -321,7 +262,7 @@
     </main>
 
     <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
-        <p>© 2026 PixelWorld Fish Caught LBS Tool. 1080p HD Engine.</p>
+        <p>© 2026 Pixel World Fish Caught LBS Editor. 1080p HD Engine.</p>
     </footer>
 
     <!-- Bildirim -->
@@ -334,12 +275,40 @@
         // DOM Elemanları
         const canvas = document.getElementById('editor-canvas');
         const ctx = canvas.getContext('2d');
+        // Polyfill: some browsers may not implement CanvasRenderingContext2D.roundRect
+        if (typeof CanvasRenderingContext2D !== 'undefined' && typeof CanvasRenderingContext2D.prototype.roundRect !== 'function') {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+                if (r === undefined) r = 8;
+                if (typeof r === 'number') {
+                    r = { tl: r, tr: r, br: r, bl: r };
+                } else {
+                    r = Object.assign({ tl: 0, tr: 0, br: 0, bl: 0 }, r);
+                }
+                this.beginPath();
+                this.moveTo(x + r.tl, y);
+                this.lineTo(x + w - r.tr, y);
+                this.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+                this.lineTo(x + w, y + h - r.br);
+                this.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+                this.lineTo(x + r.bl, y + h);
+                this.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+                this.lineTo(x, y + r.tl);
+                this.quadraticCurveTo(x, y, x + r.tl, y);
+                this.closePath();
+                return this;
+            };
+        }
         const canvasLoader = document.getElementById('canvas-loader');
+        const uploadStatusEl = document.getElementById('upload-status');
+
+        function setUploadStatus(msg, isError = false) {
+            if (!uploadStatusEl) return;
+            uploadStatusEl.textContent = msg;
+            uploadStatusEl.style.color = isError ? '#fca5a5' : '#93c5fd';
+        }
         
         // Girdiler
         const inputMainWeight = document.getElementById('input-main-weight');
-        const inputPrWeight = document.getElementById('input-pr-weight');
-        const inputWrWeight = document.getElementById('input-wr-weight');
         
         // Kaydırıcılar (Sliders)
         const mainX = document.getElementById('main-x');
@@ -350,13 +319,7 @@
         const mainMaskColorInput = document.getElementById('main-mask-color');
         const mainTextColorInput = document.getElementById('main-text-color');
         
-        const recordX = document.getElementById('record-x');
-        const recordY = document.getElementById('record-y');
-        const recordMaskW = document.getElementById('record-mask-w');
-        const recordMaskH = document.getElementById('record-mask-h');
-        const recordFontSize = document.getElementById('record-font-size');
-        const recordMaskColorInput = document.getElementById('record-mask-color');
-        const recordTextColorInput = document.getElementById('record-text-color');
+        // Record (ALT ŞERİT) removed per request
         
         const fontFamilySelect = document.getElementById('font-family-select');
         const textStrokeInput = document.getElementById('text-stroke');
@@ -380,6 +343,7 @@
         let currentMode = "image";
         let isDragging = null; // 'main' veya 'record'
         let dragOffset = { x: 0, y: 0 };
+        let mainFocused = false; // whether to show main mask frame
 
         const state = {
             baseImage: new Image(),
@@ -389,11 +353,7 @@
             main: {
                 get text() { return inputMainWeight.value + ' lbs'; }
             },
-            records: {
-                get text() {
-                    return `world record: ${inputWrWeight.value} lbs`;
-                }
-            }
+            // records removed
         };
 
         function clampZoom(value) {
@@ -462,16 +422,53 @@
         }
 
         function loadUploadedFile(file) {
-            if (!file || !file.type || !file.type.startsWith('image/')) {
+            console.debug('loadUploadedFile called:', file && { name: file.name, type: file.type, size: file.size });
+
+            setUploadStatus('Processing file: ' + (file && file.name ? file.name : 'unknown'));
+
+            if (!file) {
+                showToast('Dosya bulunamadı.', false);
+                return;
+            }
+
+            const isImageType = file.type && file.type.startsWith('image/');
+            const extMatch = file.name && file.name.match(/\.(png|jpe?g|gif|webp|bmp|svg|heic|heif)$/i);
+
+            if (!isImageType && !extMatch) {
                 showToast('Lütfen geçerli bir görsel dosyası seçin.', false);
                 return;
             }
 
-            const objectUrl = URL.createObjectURL(file);
-            loadScreenshot(objectUrl, () => {
-                URL.revokeObjectURL(objectUrl);
-                showToast('Yeni görsel yüklendi, artık sürükleyip taşıyabilirsiniz!');
-            });
+            // Önce object URL dene (hızlı). Hata olursa FileReader ile fallback yap.
+            try {
+                const objectUrl = URL.createObjectURL(file);
+                loadScreenshot(objectUrl, () => {
+                    URL.revokeObjectURL(objectUrl);
+                    setUploadStatus('Image loaded successfully.');
+                    showToast('New image loaded — you can drag it now!');
+                });
+            } catch (err) {
+                console.warn('Object URL failed, falling back to FileReader:', err);
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    try {
+                        loadScreenshot(ev.target.result, () => {
+                            setUploadStatus('Image loaded via FileReader fallback.');
+                            showToast('New image loaded (FileReader fallback)!');
+                        });
+                    } catch (err2) {
+                        console.error('loadScreenshot error (from FileReader):', err2);
+                        setUploadStatus('Error rendering image.', true);
+                        showToast('Görsel yüklenirken hata oluştu.', false);
+                    }
+                };
+                reader.onerror = function(err2) {
+                    console.error('FileReader error:', err2);
+                    setUploadStatus('FileReader failed to read file.', true);
+                    showToast('Görsel okunamadı.', false);
+                };
+                reader.readAsDataURL(file);
+            }
         }
 
         function preventBrowserFileNavigation(event) {
@@ -498,12 +495,12 @@
                 canvas.height = state.baseImage.naturalHeight;
                 state.loaded = true;
                 canvasLoader.classList.add('hidden');
+                setUploadStatus('Image loaded into canvas: ' + (state.baseImage && state.baseImage.naturalWidth ? canvas.width + 'x' + canvas.height : 'unknown'));
                 
                 // Slider limitlerini resme göre dinamik ata
                 mainX.max = canvas.width;
                 mainY.max = canvas.height;
-                recordX.max = canvas.width;
-                recordY.max = canvas.height;
+                // record sliders removed
 
                 resetSlidersForImage();
                 fitZoomToView();
@@ -514,12 +511,27 @@
                 }
             };
             
-            nextImage.onerror = function() {
+            nextImage.onerror = function(ev) {
                 canvasLoader.classList.add('hidden');
+                // If the attempted src is a bare filename and we're running via file://,
+                // avoid showing noisy error messages (this is expected when defaultSrc file is absent).
+                const isBareFilename = (typeof src === 'string') && !/^data:|^blob:|^https?:\/\//i.test(src);
+                if (location && location.protocol === 'file:' && isBareFilename) {
+                    console.debug('Image not found (suppressed noisy error for local filename):', src);
+                    setUploadStatus('Using vector template (no default image).');
+                    switchToVectorMode();
+                    return;
+                }
+
+                console.error('Image failed to load:', ev, 'src=', src);
+                setUploadStatus('Image failed to load — see console for details.', true);
+                showToast('Image failed to load — check console.', false);
+                // Keep behavior: fall back to vector template so UI remains usable
                 switchToVectorMode();
             };
             
             nextImage.src = src;
+            console.debug('loadScreenshot set nextImage.src ->', src && (src.length > 200 ? src.slice(0,200) + '... (truncated)' : src));
         }
 
         function switchToVectorMode() {
@@ -530,8 +542,6 @@
             
             mainX.max = canvas.width;
             mainY.max = canvas.height;
-            recordX.max = canvas.width;
-            recordY.max = canvas.height;
 
             // Slider konumlarını 1024x576 çözünürlüğe göre ayarla
             mainX.value = 512;
@@ -540,11 +550,7 @@
             mainMaskH.value = 30;
             mainFontSize.value = 18;
 
-            recordX.value = 512;
-            recordY.value = 368;
-            recordMaskW.value = 420;
-            recordMaskH.value = 22;
-            recordFontSize.value = 11;
+            // record values removed
 
             updateSliderLabels();
             fitZoomToView();
@@ -560,11 +566,7 @@
             mainMaskH.value = 24;
             mainFontSize.value = 13;
 
-            recordX.value = 503;
-            recordY.value = 353;
-            recordMaskW.value = 272;
-            recordMaskH.value = 16;
-            recordFontSize.value = 9;
+            // record slider defaults removed
 
             updateSliderLabels();
         }
@@ -576,11 +578,7 @@
             document.getElementById('val-main-mask-h').textContent = mainMaskH.value;
             document.getElementById('val-main-font-size').textContent = mainFontSize.value + "px";
             
-            document.getElementById('val-record-x').textContent = recordX.value;
-            document.getElementById('val-record-y').textContent = recordY.value;
-            document.getElementById('val-record-mask-w').textContent = recordMaskW.value;
-            document.getElementById('val-record-mask-h').textContent = recordMaskH.value;
-            document.getElementById('val-record-font-size').textContent = recordFontSize.value + "px";
+            // record label updates removed
         }
 
         function draw() {
@@ -665,12 +663,6 @@
             const mMH = parseInt(mainMaskH.value);
             const mFS = parseInt(mainFontSize.value);
 
-            const rX = parseInt(recordX.value);
-            const rY = parseInt(recordY.value);
-            const rMW = parseInt(recordMaskW.value);
-            const rMH = parseInt(recordMaskH.value);
-            const rFS = parseInt(recordFontSize.value);
-
             const fontFamily = fontFamilySelect.value;
             const strokeWidth = parseInt(textStrokeInput.value);
 
@@ -696,39 +688,14 @@
             ctx.fillStyle = mainTextColorInput.value;
             ctx.fillText(state.main.text, mX, mY);
 
-            // 2. REKORLAR ŞERİDİ MASKE VE YAZISI
-            const recMaskLeft = rX - (rMW / 2);
-            const recMaskTop = rY - (rMH / 2) - 2;
-
-            ctx.fillStyle = recordMaskColorInput.value;
-            ctx.fillRect(recMaskLeft, recMaskTop, rMW, rMH);
-
-            ctx.font = `bold ${rFS}px ${fontFamily}`;
-
-            if (strokeWidth > 0) {
-                ctx.strokeStyle = "#000000";
-                ctx.lineWidth = Math.max(1, strokeWidth - 1);
-                ctx.lineJoin = "round";
-                ctx.strokeText(state.records.text, rX, rY);
-            }
-
-            ctx.fillStyle = recordTextColorInput.value;
-            ctx.fillText(state.records.text, rX, rY);
-
-            // REHBER KILAVUZ ÇİZGİLER (SADECE SEÇİLİYSE)
-            if (toggleGuides.checked) {
+            // REHBER KILAVUZ ÇİZGİLER: show main mask frame only when focused
+            if (typeof mainFocused !== 'undefined' && mainFocused) {
                 ctx.strokeStyle = "#3b82f6";
                 ctx.lineWidth = 1.5;
                 ctx.setLineDash([4, 2]);
                 ctx.strokeRect(mainMaskLeft, mainMaskTop, mMW, mMH);
                 ctx.fillStyle = "rgba(59, 130, 246, 0.08)";
                 ctx.fillRect(mainMaskLeft, mainMaskTop, mMW, mMH);
-
-                ctx.strokeStyle = "#6366f1";
-                ctx.strokeRect(recMaskLeft, recMaskTop, rMW, rMH);
-                ctx.fillStyle = "rgba(99, 102, 241, 0.08)";
-                ctx.fillRect(recMaskLeft, recMaskTop, rMW, rMH);
-
                 ctx.setLineDash([]);
             }
         }
@@ -762,28 +729,18 @@
             const mMW = parseInt(mainMaskW.value);
             const mMH = parseInt(mainMaskH.value);
             
-            const rX = parseInt(recordX.value);
-            const rY = parseInt(recordY.value);
-            const rMW = parseInt(recordMaskW.value);
-            const rMH = parseInt(recordMaskH.value);
-
             // Main box limits
             if (coords.x >= mX - mMW/2 && coords.x <= mX + mMW/2 && coords.y >= mY - mMH/2 && coords.y <= mY + mMH/2) {
                 isDragging = 'main';
                 dragOffset.x = coords.x - mX;
                 dragOffset.y = coords.y - mY;
+                // focus main mask when clicked
+                mainFocused = true;
                 e.preventDefault();
                 return;
             }
-
-            // Record box limits
-            if (coords.x >= rX - rMW/2 && coords.x <= rX + rMW/2 && coords.y >= rY - rMH/2 && coords.y <= rY + rMH/2) {
-                isDragging = 'record';
-                dragOffset.x = coords.x - rX;
-                dragOffset.y = coords.y - rY;
-                e.preventDefault();
-                return;
-            }
+            // If click outside main box, remove focus
+            mainFocused = false;
         }
 
         function handleMove(e) {
@@ -791,13 +748,9 @@
             const coords = getCanvasCoords(e);
             const newX = Math.round(coords.x - dragOffset.x);
             const newY = Math.round(coords.y - dragOffset.y);
-
             if (isDragging === 'main') {
                 mainX.value = Math.max(0, Math.min(canvas.width, newX));
                 mainY.value = Math.max(0, Math.min(canvas.height, newY));
-            } else if (isDragging === 'record') {
-                recordX.value = Math.max(0, Math.min(canvas.width, newX));
-                recordY.value = Math.max(0, Math.min(canvas.height, newY));
             }
 
             updateSliderLabels();
@@ -820,9 +773,8 @@
         window.addEventListener('touchend', handleEnd);
 
         const controls = [
-            inputMainWeight, inputPrWeight, inputWrWeight,
+            inputMainWeight,
             mainX, mainY, mainMaskW, mainMaskH, mainFontSize, mainMaskColorInput, mainTextColorInput,
-            recordX, recordY, recordMaskW, recordMaskH, recordFontSize, recordMaskColorInput, recordTextColorInput,
             fontFamilySelect, textStrokeInput, toggleGuides
         ];
 
@@ -837,9 +789,27 @@
             });
         });
 
+        // Show main mask frame when the LBS input is focused
+        inputMainWeight.addEventListener('focus', () => {
+            mainFocused = true;
+            draw();
+        });
+        inputMainWeight.addEventListener('blur', () => {
+            mainFocused = false;
+            draw();
+        });
+
         imageUploader.addEventListener('change', function(e) {
+            console.debug('imageUploader.change', e);
             if (e.target.files && e.target.files[0]) {
-                loadUploadedFile(e.target.files[0]);
+                try {
+                    setUploadStatus('File selected: ' + e.target.files[0].name);
+                    loadUploadedFile(e.target.files[0]);
+                } catch (err) {
+                    console.error('loadUploadedFile error (from change):', err);
+                    setUploadStatus('Error loading file.', true);
+                    showToast('Dosya yüklenirken hata oluştu.', false);
+                }
                 e.target.value = '';
             }
         });
@@ -868,9 +838,38 @@
         });
 
         uploadDropZone.addEventListener('drop', (e) => {
-            const file = e.dataTransfer && e.dataTransfer.files ? e.dataTransfer.files[0] : null;
+            e.preventDefault();
+            e.stopPropagation();
+            console.debug('uploadDropZone.drop', e);
+            let file = null;
+            try {
+                if (e.dataTransfer) {
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                        file = e.dataTransfer.files[0];
+                    } else if (e.dataTransfer.items && e.dataTransfer.items.length > 0) {
+                        // Some browsers expose items
+                        const item = e.dataTransfer.items[0];
+                        if (item.kind === 'file' && typeof item.getAsFile === 'function') {
+                            file = item.getAsFile();
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Error reading dropped data:', err);
+            }
+
             if (file) {
-                loadUploadedFile(file);
+                try {
+                    setUploadStatus('File dropped: ' + (file.name || 'unknown'));
+                    loadUploadedFile(file);
+                } catch (err) {
+                    console.error('loadUploadedFile error (from drop):', err);
+                    setUploadStatus('Drop upload failed.', true);
+                    showToast('Sürükle-bırak yüklemesi başarısız oldu.', false);
+                }
+            } else {
+                console.warn('No file found in drop event');
+                setUploadStatus('No file detected in drop event.', true);
             }
         });
 
@@ -923,7 +922,7 @@
                     const item = new ClipboardItem({ "image/png": blob });
                     navigator.clipboard.write([item]).then(() => {
                         showToast("Düzenlenen görsel panoya kopyalandı!");
-                    }).catch(() => 
+                    }).catch(() => {
                         showToast("Tarayıcı engelledi, indirme butonunu kullanın.", false);
                     });
                 } catch (e) {
@@ -937,7 +936,19 @@
 
         window.onload = function() {
             updateSliderLabels();
-            loadScreenshot(state.defaultSrc);
+            // If served via file:// some browsers restrict loading local resources.
+            const isFileProtocol = (location && location.protocol === 'file:');
+            const isBareDefault = (typeof state.defaultSrc === 'string') && !/^data:|^blob:|^https?:\/\//i.test(state.defaultSrc);
+            // Note: file:// banner removed; still avoid auto-loading bare default filenames under file://
+
+            // If defaultSrc is a bare filename and we're running under file://, skip attempting to load it
+            // to avoid browser network errors (ERR_FILE_NOT_FOUND). Use vector template instead.
+            if (isFileProtocol && isBareDefault) {
+                setUploadStatus('Using vector template (no default image).');
+                switchToVectorMode();
+            } else {
+                loadScreenshot(state.defaultSrc);
+            }
             applyZoom(1);
         };
     </script>
