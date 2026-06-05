@@ -646,6 +646,19 @@
             draw();
         });
 
+        // If the user clicks anywhere outside the canvas or the LBS input, remove focus
+        document.addEventListener('click', (ev) => {
+            const target = ev.target;
+            const clickedOnCanvas = canvas.contains(target) || target === canvas;
+            const clickedOnInput = target === inputMainWeight || inputMainWeight.contains && inputMainWeight.contains(target);
+            if (!clickedOnCanvas && !clickedOnInput) {
+                if (mainFocused) {
+                    mainFocused = false;
+                    draw();
+                }
+            }
+        });
+
         imageUploader.addEventListener('change', function(e) {
             console.debug('imageUploader.change', e);
             if (e.target.files && e.target.files[0]) {
