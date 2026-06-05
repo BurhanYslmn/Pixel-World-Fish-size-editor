@@ -1,0 +1,6 @@
+# ignore exported images and editor files
+*.png
+*.jpg
+*.jpeg
+.vscode/
+node_modules/
