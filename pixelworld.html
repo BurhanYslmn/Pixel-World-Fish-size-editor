@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel World Fish Caught LBS Editor (HD & Sürükle-Bırak)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Press+Start+2P&family=Ubuntu+Mono:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .pixel-font {
+            font-family: 'Press Start 2P', monospace;
+        }
+        .mono-font {
+            font-family: 'Ubuntu Mono', monospace;
+        }
+        /* Keskin piksel kalitesi için özel render motoru */
+        #editor-canvas {
+            max-width: none;
+            max-height: none;
+            image-rendering: -moz-crisp-edges;
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: auto;
+            transform-origin: top left;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
+
+    <header class="bg-slate-950 border-b border-slate-800 py-4 px-6 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-blue-600 p-2.5 rounded-xl shadow-lg shadow-blue-500/20 text-white">
+                    <i class="fa-solid fa-fish-fins text-xl animate-bounce"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">Pixel WOrld Fish Caught LBS Editor</h1>
+                    <p class="text-xs text-slate-400 font-medium font-mono">Görsel üzerindeki yazıları sürükleyip bırakarak veya elle düzenleyin</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Gerçek Zamanlı Düzenleme
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Sol Panel: Kontroller -->
+        <section class="lg:col-span-5 flex flex-col gap-5">
+            
+            <!-- Görsel Kaynağı Seçimi -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-file-image text-blue-400"></i> 1. Görsel Ayarı
+                </h2>
+                <div class="flex flex-col gap-3">
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-load-default" class="px-3 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs font-bold rounded-xl border border-slate-800 hover:border-slate-700 transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-rotate-left text-blue-400"></i> Varsayılana Dön
+                        </button>
+                        <button id="btn-load-fallback" class="px-3 py-2.5 bg-blue-600/10 hover:bg-blue-600/20 text-blue-400 text-xs font-bold rounded-xl border border-blue-500/20 hover:border-blue-500/30 transition-all flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Şablon Çiz (1080p)
+                        </button>
+                    </div>
+                    
+                    <div class="relative group border border-dashed border-slate-800 hover:border-blue-500/50 rounded-xl p-3 text-center cursor-pointer transition-all bg-slate-900/10 hover:bg-slate-900/30">
+                        <input type="file" id="image-uploader" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                        <div class="flex flex-col items-center justify-center gap-1">
+                            <i class="fa-solid fa-cloud-arrow-up text-xl text-slate-500 group-hover:text-blue-400 transition-colors"></i>
+                            <span class="text-xs font-semibold text-slate-300 group-hover:text-slate-100">Kendi Ekran Görüntünü Yükle veya Buraya Bırak</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Değerleri Düzenleme Alanı -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-5 shadow-xl flex flex-col gap-4">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-indigo-400"></i> 2. Değerleri Değiştir
+                </h2>
+
+                <!-- Ana Ağırlık Alanı -->
+                <div class="bg-slate-900/40 p-4 border border-slate-800/60 rounded-xl flex flex-col gap-3">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Ana Balık Ağırlığı
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">ORTA KUTU</span>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Yeni Ağırlık (LBS):</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="input-main-weight" value="98.75" class="bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-sm font-bold text-white focus:outline-none focus:border-blue-500 w-full font-mono">
+                            <span class="bg-slate-800 px-3 py-2 text-xs font-bold text-slate-400 rounded-lg flex items-center justify-center">lbs</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Maske Rengi:</label>
+                            <input type="color" id="main-mask-color" value="#0c1b2d" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Yazı Rengi:</label>
+                            <input type="color" id="main-text-color" value="#ffffff" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
+                        </div>
+                    </div>
+                    
+                    <details class="group mt-1" open>
+                        <summary class="text-[11px] font-bold text-slate-500 hover:text-slate-300 cursor-pointer list-none flex items-center gap-1">
+                            <i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform text-[8px]"></i> Konum & Boyut Ayarı
+                        </summary>
+                        <div class="pt-3 grid grid-cols-2 gap-3 border-t border-slate-800/50 mt-2">
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Yatay (X)</label>
+                                <input type="range" id="main-x" min="0" max="1024" value="503" class="w-full accent-blue-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-main-x">503</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Dikey (Y)</label>
+                                <input type="range" id="main-y" min="0" max="576" value="315" class="w-full accent-blue-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-main-y">315</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Maske Eni</label>
+                                <input type="range" id="main-mask-w" min="10" max="400" value="94" class="w-full accent-blue-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-main-mask-w">94</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Maske Boyu</label>
+                                <input type="range" id="main-mask-h" min="5" max="100" value="24" class="w-full accent-blue-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-main-mask-h">24</span>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="text-[10px] text-slate-400 block mb-1">Yazı Boyutu</label>
+                                <input type="range" id="main-font-size" min="6" max="60" value="13" class="w-full accent-blue-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-main-font-size">13px</span>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Alt Rekor Şeridi Alanı -->
+                <div class="bg-slate-900/40 p-4 border border-slate-800/60 rounded-xl flex flex-col gap-3">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                        <span class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-indigo-500"></span> Rekor Şeridi (Kişisel & Dünya)
+                        </span>
+                        <span class="text-[10px] text-slate-500 font-mono">ALT ŞERİT</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Kişisel (PR):</label>
+                            <input type="text" id="input-pr-weight" value="86,13" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-indigo-500 w-full font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Dünya (WR):</label>
+                            <input type="text" id="input-wr-weight" value="102,86" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs font-bold text-white focus:outline-none focus:border-indigo-500 w-full font-mono">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 mt-1">
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Maske Rengi:</label>
+                            <input type="color" id="record-mask-color" value="#0d1c2e" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-slate-400 block mb-1">Yazı Rengi:</label>
+                            <input type="color" id="record-text-color" value="#99b2cd" class="w-full h-8 rounded cursor-pointer bg-transparent border border-slate-700 p-0.5">
+                        </div>
+                    </div>
+                    
+                    <details class="group mt-1">
+                        <summary class="text-[11px] font-bold text-slate-500 hover:text-slate-300 cursor-pointer list-none flex items-center gap-1">
+                            <i class="fa-solid fa-chevron-right group-open:rotate-90 transition-transform text-[8px]"></i> Konum & Boyut Ayarı
+                        </summary>
+                        <div class="pt-3 grid grid-cols-2 gap-3 border-t border-slate-800/50 mt-2">
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Yatay (X)</label>
+                                <input type="range" id="record-x" min="0" max="1024" value="503" class="w-full accent-indigo-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-record-x">503</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Dikey (Y)</label>
+                                <input type="range" id="record-y" min="0" max="576" value="353" class="w-full accent-indigo-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-record-y">353</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Maske Eni</label>
+                                <input type="range" id="record-mask-w" min="50" max="800" value="272" class="w-full accent-indigo-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-record-mask-w">272</span>
+                            </div>
+                            <div>
+                                <label class="text-[10px] text-slate-400 block mb-1">Maske Boyu</label>
+                                <input type="range" id="record-mask-h" min="5" max="80" value="16" class="w-full accent-indigo-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-record-mask-h">16</span>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="text-[10px] text-slate-400 block mb-1">Yazı Boyutu</label>
+                                <input type="range" id="record-font-size" min="6" max="40" value="9" class="w-full accent-indigo-500">
+                                <span class="text-[9px] font-mono text-slate-500" id="val-record-font-size">9px</span>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
+                <!-- Yazı Tipi & Efektler -->
+                <div class="bg-slate-900/20 p-4 border border-slate-800/50 rounded-xl flex flex-col gap-3">
+                    <span class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-font text-amber-400"></i> Tipografi ve Efektler
+                    </span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Yazı Tipi (Font):</label>
+                            <select id="font-family-select" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 w-full">
+                                <option value="Arial, Helvetica, sans-serif" selected>Arial Bold (Gerçekçi)</option>
+                                <option value="sans-serif">Sistem Yazı Tipi</option>
+                                <option value="monospace">Piksel Fontu (Mono)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Yazı Konturu (Outline):</label>
+                            <input type="number" id="text-stroke" value="3" min="0" max="6" class="bg-slate-950 border border-slate-700 rounded-lg px-2 py-1.5 text-xs text-white focus:outline-none focus:border-amber-500 w-full">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Sağ Panel: Canlı Ekran / Canvas -->
+        <section class="lg:col-span-7 flex flex-col gap-4">
+            
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 shadow-xl flex-1 flex flex-col min-h-[450px]">
+                <div class="flex flex-wrap justify-between items-center pb-3 border-b border-slate-800 mb-4 gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-300">Önizleme (Canlı Sürükle ve Bırak)</h3>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer text-xs font-medium text-slate-400 hover:text-slate-300">
+                            <input type="checkbox" id="toggle-guides" checked class="w-4 h-4 rounded text-blue-600 bg-slate-900 border-slate-700 focus:ring-blue-500">
+                            Düzenleme Maskelerini Göster
+                        </label>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 mb-4">
+                    <div class="flex flex-col xl:flex-row xl:items-center gap-3 xl:gap-4">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button id="btn-zoom-out" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition-colors">
+                                <i class="fa-solid fa-magnifying-glass-minus"></i>
+                            </button>
+                            <button id="btn-zoom-fit" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition-colors">
+                                Sığdır
+                            </button>
+                            <button id="btn-zoom-reset" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition-colors">
+                                1:1
+                            </button>
+                            <button id="btn-zoom-in" class="px-3 py-2 rounded-lg border border-slate-700 bg-slate-900 hover:bg-slate-800 text-xs font-semibold text-slate-200 transition-colors">
+                                <i class="fa-solid fa-magnifying-glass-plus"></i>
+                            </button>
+                        </div>
+                        <div class="flex-1 grid grid-cols-1 gap-2">
+                            <input type="range" id="zoom-range" min="0.5" max="3" step="0.05" value="1" class="w-full accent-blue-500">
+                            <div class="flex items-center justify-between text-[11px] text-slate-400">
+                                <span>Yakınlaştırma</span>
+                                <span id="zoom-label" class="font-mono text-slate-200">100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Canvas Kutusu -->
+                <div class="flex-1 flex items-center justify-center bg-slate-900 rounded-xl overflow-hidden p-2 border border-slate-800 relative min-h-[350px]">
+                    <!-- Yüklenme Göstergesi -->
+                    <div id="canvas-loader" class="absolute inset-0 bg-slate-950/90 flex flex-col items-center justify-center gap-3 z-20 hidden">
+                        <i class="fa-solid fa-spinner text-3xl text-blue-500 animate-spin"></i>
+                        <span class="text-xs font-semibold text-slate-300">Görsel Hazırlanıyor...</span>
+                    </div>
+
+                    <div id="canvas-stage" class="max-w-full max-h-[65vh] overflow-auto flex items-center justify-center relative w-full h-full">
+                        <canvas id="editor-canvas" class="cursor-move rounded shadow-2xl border border-slate-700"></canvas>
+                    </div>
+                </div>
+
+                <!-- İpuçları -->
+                <div class="mt-3 flex items-start gap-2 text-[11px] text-slate-400">
+                    <i class="fa-solid fa-circle-info text-blue-400 mt-0.5"></i>
+                    <div>
+                        <p class="font-medium text-emerald-400">Yeni: Akıllı Sürükle-Bırak Özelliği!</p>
+                        <p>Kutuları görselin üzerinde istediğiniz yere taşımak için **doğrudan yazının üzerine tıklayıp sürükleyebilirsiniz.**</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Kısım: Aksiyonlar -->
+            <div class="bg-slate-950 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-wrap gap-4 items-center justify-between">
+                <div>
+                    <span class="text-xs font-bold text-slate-300 block">Düzenleme bitti mi?</span>
+                    <span class="text-[11px] text-slate-500">Aşağıdaki butonları kullanarak HD olarak kaydedebilirsiniz.</span>
+                </div>
+                <div class="flex items-center gap-3 flex-wrap">
+                    <button id="btn-copy-clipboard" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white font-semibold text-xs rounded-xl transition-all flex items-center gap-2 border border-slate-700">
+                        <i class="fa-solid fa-copy"></i> Panoya Kopyala
+                    </button>
+                    <button id="btn-download" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20 hover:scale-[1.02]">
+                        <i class="fa-solid fa-download"></i> Düzenlenmiş Görseli İndir
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-950 border-t border-slate-800 py-4 text-center text-xs text-slate-500 mt-auto">
+        <p>© 2026 PixelWorld Fish Caught LBS Tool. 1080p HD Engine.</p>
+    </footer>
+
+    <!-- Bildirim -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-slate-800 text-slate-100 px-4 py-3 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-text" class="text-xs font-semibold">Başarılı!</span>
+    </div>
+
+    <script>
+        // DOM Elemanları
+        const canvas = document.getElementById('editor-canvas');
+        const ctx = canvas.getContext('2d');
+        const canvasLoader = document.getElementById('canvas-loader');
+        
+        // Girdiler
+        const inputMainWeight = document.getElementById('input-main-weight');
+        const inputPrWeight = document.getElementById('input-pr-weight');
+        const inputWrWeight = document.getElementById('input-wr-weight');
+        
+        // Kaydırıcılar (Sliders)
+        const mainX = document.getElementById('main-x');
+        const mainY = document.getElementById('main-y');
+        const mainMaskW = document.getElementById('main-mask-w');
+        const mainMaskH = document.getElementById('main-mask-h');
+        const mainFontSize = document.getElementById('main-font-size');
+        const mainMaskColorInput = document.getElementById('main-mask-color');
+        const mainTextColorInput = document.getElementById('main-text-color');
+        
+        const recordX = document.getElementById('record-x');
+        const recordY = document.getElementById('record-y');
+        const recordMaskW = document.getElementById('record-mask-w');
+        const recordMaskH = document.getElementById('record-mask-h');
+        const recordFontSize = document.getElementById('record-font-size');
+        const recordMaskColorInput = document.getElementById('record-mask-color');
+        const recordTextColorInput = document.getElementById('record-text-color');
+        
+        const fontFamilySelect = document.getElementById('font-family-select');
+        const textStrokeInput = document.getElementById('text-stroke');
+        const toggleGuides = document.getElementById('toggle-guides');
+        const imageUploader = document.getElementById('image-uploader');
+        const uploadDropZone = imageUploader.parentElement;
+        const canvasStage = document.getElementById('canvas-stage');
+        const zoomRange = document.getElementById('zoom-range');
+        const zoomLabel = document.getElementById('zoom-label');
+        const btnZoomOut = document.getElementById('btn-zoom-out');
+        const btnZoomIn = document.getElementById('btn-zoom-in');
+        const btnZoomReset = document.getElementById('btn-zoom-reset');
+        const btnZoomFit = document.getElementById('btn-zoom-fit');
+        
+        // Butonlar
+        const btnLoadDefault = document.getElementById('btn-load-default');
+        const btnLoadFallback = document.getElementById('btn-load-fallback');
+        const btnDownload = document.getElementById('btn-download');
+        const btnCopyClipboard = document.getElementById('btn-copy-clipboard');
+
+        let currentMode = "image";
+        let isDragging = null; // 'main' veya 'record'
+        let dragOffset = { x: 0, y: 0 };
+
+        const state = {
+            baseImage: new Image(),
+            defaultSrc: '167128b0-ebd9-49ab-9c1a-c61703e06b80.jpg',
+            loaded: false,
+            zoom: 1,
+            main: {
+                get text() { return inputMainWeight.value + ' lbs'; }
+            },
+            records: {
+                get text() {
+                    return `world record: ${inputWrWeight.value} lbs`;
+                }
+            }
+        };
+
+        function clampZoom(value) {
+            return Math.max(0.5, Math.min(3, value));
+        }
+
+        function applyZoom(value, preserveScroll = false) {
+            const nextZoom = clampZoom(value);
+            const beforeLeft = preserveScroll ? canvasStage.scrollLeft : 0;
+            const beforeTop = preserveScroll ? canvasStage.scrollTop : 0;
+
+            state.zoom = nextZoom;
+            zoomRange.value = String(nextZoom);
+            zoomLabel.textContent = Math.round(nextZoom * 100) + '%';
+            canvas.style.width = `${Math.round(canvas.width * nextZoom)}px`;
+            canvas.style.height = `${Math.round(canvas.height * nextZoom)}px`;
+
+            if (preserveScroll) {
+                requestAnimationFrame(() => {
+                    canvasStage.scrollLeft = beforeLeft * (nextZoom / Math.max(0.5, clampZoom(parseFloat(zoomRange.dataset.previousZoom || nextZoom))));
+                    canvasStage.scrollTop = beforeTop * (nextZoom / Math.max(0.5, clampZoom(parseFloat(zoomRange.dataset.previousZoom || nextZoom))));
+                });
+            } else {
+                canvasStage.scrollLeft = 0;
+                canvasStage.scrollTop = 0;
+            }
+
+            zoomRange.dataset.previousZoom = String(nextZoom);
+        }
+
+        function zoomBy(step) {
+            applyZoom(parseFloat(zoomRange.value) + step, true);
+        }
+
+        function fitZoomToView() {
+            if (!canvas.width || !canvas.height) {
+                applyZoom(1);
+                return;
+            }
+
+            const availableWidth = Math.max(320, canvasStage.clientWidth - 24);
+            const availableHeight = Math.max(240, canvasStage.clientHeight - 24);
+            const fitted = Math.min(availableWidth / canvas.width, availableHeight / canvas.height, 2.5);
+            applyZoom(Math.max(0.5, fitted));
+        }
+
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            const toastIcon = document.getElementById('toast-icon');
+            const toastText = document.getElementById('toast-text');
+            
+            toastText.textContent = message;
+            if (isSuccess) {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-exclamation text-amber-400";
+            }
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function loadUploadedFile(file) {
+            if (!file || !file.type || !file.type.startsWith('image/')) {
+                showToast('Lütfen geçerli bir görsel dosyası seçin.', false);
+                return;
+            }
+
+            const objectUrl = URL.createObjectURL(file);
+            loadScreenshot(objectUrl, () => {
+                URL.revokeObjectURL(objectUrl);
+                showToast('Yeni görsel yüklendi, artık sürükleyip taşıyabilirsiniz!');
+            });
+        }
+
+        function preventBrowserFileNavigation(event) {
+            const hasFile = event.dataTransfer && Array.from(event.dataTransfer.files || []).length > 0;
+            if (hasFile) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        }
+
+        function loadScreenshot(src, onFinish = null) {
+            canvasLoader.classList.remove('hidden');
+            state.loaded = false;
+            currentMode = "image";
+            
+            const nextImage = new Image();
+            if (/^https?:\/\//i.test(src)) {
+                nextImage.crossOrigin = "anonymous";
+            }
+
+            nextImage.onload = function() {
+                state.baseImage = nextImage;
+                canvas.width = state.baseImage.naturalWidth;
+                canvas.height = state.baseImage.naturalHeight;
+                state.loaded = true;
+                canvasLoader.classList.add('hidden');
+                
+                // Slider limitlerini resme göre dinamik ata
+                mainX.max = canvas.width;
+                mainY.max = canvas.height;
+                recordX.max = canvas.width;
+                recordY.max = canvas.height;
+
+                resetSlidersForImage();
+                fitZoomToView();
+                draw();
+
+                if (typeof onFinish === 'function') {
+                    onFinish();
+                }
+            };
+            
+            nextImage.onerror = function() {
+                canvasLoader.classList.add('hidden');
+                switchToVectorMode();
+            };
+            
+            nextImage.src = src;
+        }
+
+        function switchToVectorMode() {
+            currentMode = "vector";
+            canvas.width = 1024;
+            canvas.height = 576;
+            state.loaded = true;
+            
+            mainX.max = canvas.width;
+            mainY.max = canvas.height;
+            recordX.max = canvas.width;
+            recordY.max = canvas.height;
+
+            // Slider konumlarını 1024x576 çözünürlüğe göre ayarla
+            mainX.value = 512;
+            mainY.value = 325;
+            mainMaskW.value = 140;
+            mainMaskH.value = 30;
+            mainFontSize.value = 18;
+
+            recordX.value = 512;
+            recordY.value = 368;
+            recordMaskW.value = 420;
+            recordMaskH.value = 22;
+            recordFontSize.value = 11;
+
+            updateSliderLabels();
+            fitZoomToView();
+            draw();
+            showToast("Vektörel HD Şablon Çizildi!");
+        }
+
+        // 167128b0-ebd9-49ab-9c1a-c61703e06b80.jpg görseline göre tam milimetrik koordinatlar!
+        function resetSlidersForImage() {
+            mainX.value = 503;
+            mainY.value = 315;
+            mainMaskW.value = 94;
+            mainMaskH.value = 24;
+            mainFontSize.value = 13;
+
+            recordX.value = 503;
+            recordY.value = 353;
+            recordMaskW.value = 272;
+            recordMaskH.value = 16;
+            recordFontSize.value = 9;
+
+            updateSliderLabels();
+        }
+
+        function updateSliderLabels() {
+            document.getElementById('val-main-x').textContent = mainX.value;
+            document.getElementById('val-main-y').textContent = mainY.value;
+            document.getElementById('val-main-mask-w').textContent = mainMaskW.value;
+            document.getElementById('val-main-mask-h').textContent = mainMaskH.value;
+            document.getElementById('val-main-font-size').textContent = mainFontSize.value + "px";
+            
+            document.getElementById('val-record-x').textContent = recordX.value;
+            document.getElementById('val-record-y').textContent = recordY.value;
+            document.getElementById('val-record-mask-w').textContent = recordMaskW.value;
+            document.getElementById('val-record-mask-h').textContent = recordMaskH.value;
+            document.getElementById('val-record-font-size').textContent = recordFontSize.value + "px";
+        }
+
+        function draw() {
+            if (!state.loaded) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.imageSmoothingEnabled = false; 
+
+            if (currentMode === "image") {
+                if (state.baseImage.complete && state.baseImage.naturalWidth > 0) {
+                    ctx.drawImage(state.baseImage, 0, 0);
+                }
+            } else {
+                // HD ŞABLON ÇİZİMİ
+                ctx.fillStyle = "#111827";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = "#1e293b";
+                for (let i = 0; i < canvas.width; i += 32) {
+                    for (let j = 0; j < canvas.height; j += 32) {
+                        ctx.strokeRect(i, j, 32, 32);
+                        ctx.strokeStyle = "#111827";
+                    }
+                }
+
+                // DIŞ MAVİ PANEL
+                const dw = 480;
+                const dh = 300;
+                const dx = (canvas.width - dw) / 2;
+                const dy = (canvas.height - dh) / 2;
+
+                ctx.fillStyle = "#5bd4ff";
+                ctx.beginPath();
+                ctx.roundRect(dx, dy, dw, dh, 16);
+                ctx.fill();
+
+                ctx.fillStyle = "#12243d";
+                ctx.beginPath();
+                ctx.roundRect(dx + 8, dy + 32, dw - 16, dh - 40, 10);
+                ctx.fill();
+
+                ctx.fillStyle = "#5bd4ff";
+                ctx.font = "bold 16px Arial";
+                ctx.textAlign = "center";
+                ctx.fillStyle = "#0c1b2d";
+                ctx.fillText("Fish Caught!", canvas.width / 2, dy + 22);
+
+                ctx.fillStyle = "#101e30";
+                ctx.beginPath();
+                ctx.roundRect(dx + 20, dy + 45, dw - 40, 32, 6);
+                ctx.fill();
+                ctx.fillStyle = "#ffcc00";
+                ctx.font = "bold 12px Arial";
+                ctx.fillText("Halibut - Huge", canvas.width / 2, dy + 65);
+
+                const boxSize = 70;
+                ctx.fillStyle = "#0a1526";
+                ctx.fillRect((canvas.width - boxSize) / 2, dy + 90, boxSize, boxSize);
+                ctx.strokeStyle = "#5bd4ff";
+                ctx.lineWidth = 1;
+                ctx.strokeRect((canvas.width - boxSize) / 2, dy + 90, boxSize, boxSize);
+
+                ctx.font = "40px Arial";
+                ctx.fillText("🐟", canvas.width / 2, dy + 140);
+
+                ctx.fillStyle = "#7cd61b";
+                ctx.beginPath();
+                ctx.roundRect((canvas.width - 160) / 2, dy + dh - 46, 160, 36, 12);
+                ctx.fill();
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 14px Arial";
+                ctx.fillText("Take Fish", canvas.width / 2, dy + dh - 23);
+            }
+
+            const mX = parseInt(mainX.value);
+            const mY = parseInt(mainY.value);
+            const mMW = parseInt(mainMaskW.value);
+            const mMH = parseInt(mainMaskH.value);
+            const mFS = parseInt(mainFontSize.value);
+
+            const rX = parseInt(recordX.value);
+            const rY = parseInt(recordY.value);
+            const rMW = parseInt(recordMaskW.value);
+            const rMH = parseInt(recordMaskH.value);
+            const rFS = parseInt(recordFontSize.value);
+
+            const fontFamily = fontFamilySelect.value;
+            const strokeWidth = parseInt(textStrokeInput.value);
+
+            // 1. ANA DEĞER MASKE VE YAZISI
+            const mainMaskLeft = mX - (mMW / 2);
+            const mainMaskTop = mY - (mMH / 2) - 2;
+            
+            ctx.fillStyle = mainMaskColorInput.value;
+            ctx.fillRect(mainMaskLeft, mainMaskTop, mMW, mMH);
+
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = `bold ${mFS}px ${fontFamily}`;
+
+            // Siyah çerçeve / Kontur efekti (PixelWorld tarzı)
+            if (strokeWidth > 0) {
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = strokeWidth;
+                ctx.lineJoin = "round";
+                ctx.strokeText(state.main.text, mX, mY);
+            }
+
+            ctx.fillStyle = mainTextColorInput.value;
+            ctx.fillText(state.main.text, mX, mY);
+
+            // 2. REKORLAR ŞERİDİ MASKE VE YAZISI
+            const recMaskLeft = rX - (rMW / 2);
+            const recMaskTop = rY - (rMH / 2) - 2;
+
+            ctx.fillStyle = recordMaskColorInput.value;
+            ctx.fillRect(recMaskLeft, recMaskTop, rMW, rMH);
+
+            ctx.font = `bold ${rFS}px ${fontFamily}`;
+
+            if (strokeWidth > 0) {
+                ctx.strokeStyle = "#000000";
+                ctx.lineWidth = Math.max(1, strokeWidth - 1);
+                ctx.lineJoin = "round";
+                ctx.strokeText(state.records.text, rX, rY);
+            }
+
+            ctx.fillStyle = recordTextColorInput.value;
+            ctx.fillText(state.records.text, rX, rY);
+
+            // REHBER KILAVUZ ÇİZGİLER (SADECE SEÇİLİYSE)
+            if (toggleGuides.checked) {
+                ctx.strokeStyle = "#3b82f6";
+                ctx.lineWidth = 1.5;
+                ctx.setLineDash([4, 2]);
+                ctx.strokeRect(mainMaskLeft, mainMaskTop, mMW, mMH);
+                ctx.fillStyle = "rgba(59, 130, 246, 0.08)";
+                ctx.fillRect(mainMaskLeft, mainMaskTop, mMW, mMH);
+
+                ctx.strokeStyle = "#6366f1";
+                ctx.strokeRect(recMaskLeft, recMaskTop, rMW, rMH);
+                ctx.fillStyle = "rgba(99, 102, 241, 0.08)";
+                ctx.fillRect(recMaskLeft, recMaskTop, rMW, rMH);
+
+                ctx.setLineDash([]);
+            }
+        }
+
+        function getCanvasCoords(e) {
+            const rect = canvas.getBoundingClientRect();
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            
+            let clientX, clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function handleStart(e) {
+            if (!state.loaded) return;
+            const coords = getCanvasCoords(e);
+            
+            const mX = parseInt(mainX.value);
+            const mY = parseInt(mainY.value);
+            const mMW = parseInt(mainMaskW.value);
+            const mMH = parseInt(mainMaskH.value);
+            
+            const rX = parseInt(recordX.value);
+            const rY = parseInt(recordY.value);
+            const rMW = parseInt(recordMaskW.value);
+            const rMH = parseInt(recordMaskH.value);
+
+            // Main box limits
+            if (coords.x >= mX - mMW/2 && coords.x <= mX + mMW/2 && coords.y >= mY - mMH/2 && coords.y <= mY + mMH/2) {
+                isDragging = 'main';
+                dragOffset.x = coords.x - mX;
+                dragOffset.y = coords.y - mY;
+                e.preventDefault();
+                return;
+            }
+
+            // Record box limits
+            if (coords.x >= rX - rMW/2 && coords.x <= rX + rMW/2 && coords.y >= rY - rMH/2 && coords.y <= rY + rMH/2) {
+                isDragging = 'record';
+                dragOffset.x = coords.x - rX;
+                dragOffset.y = coords.y - rY;
+                e.preventDefault();
+                return;
+            }
+        }
+
+        function handleMove(e) {
+            if (!isDragging || !state.loaded) return;
+            const coords = getCanvasCoords(e);
+            const newX = Math.round(coords.x - dragOffset.x);
+            const newY = Math.round(coords.y - dragOffset.y);
+
+            if (isDragging === 'main') {
+                mainX.value = Math.max(0, Math.min(canvas.width, newX));
+                mainY.value = Math.max(0, Math.min(canvas.height, newY));
+            } else if (isDragging === 'record') {
+                recordX.value = Math.max(0, Math.min(canvas.width, newX));
+                recordY.value = Math.max(0, Math.min(canvas.height, newY));
+            }
+
+            updateSliderLabels();
+            draw();
+            e.preventDefault();
+        }
+
+        function handleEnd() {
+            isDragging = null;
+        }
+
+        // Mouse Events
+        canvas.addEventListener('mousedown', handleStart);
+        window.addEventListener('mousemove', handleMove);
+        window.addEventListener('mouseup', handleEnd);
+
+        // Touch Events
+        canvas.addEventListener('touchstart', handleStart, { passive: false });
+        window.addEventListener('touchmove', handleMove, { passive: false });
+        window.addEventListener('touchend', handleEnd);
+
+        const controls = [
+            inputMainWeight, inputPrWeight, inputWrWeight,
+            mainX, mainY, mainMaskW, mainMaskH, mainFontSize, mainMaskColorInput, mainTextColorInput,
+            recordX, recordY, recordMaskW, recordMaskH, recordFontSize, recordMaskColorInput, recordTextColorInput,
+            fontFamilySelect, textStrokeInput, toggleGuides
+        ];
+
+        controls.forEach(c => {
+            c.addEventListener('input', () => {
+                updateSliderLabels();
+                draw();
+            });
+            c.addEventListener('change', () => {
+                updateSliderLabels();
+                draw();
+            });
+        });
+
+        imageUploader.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                loadUploadedFile(e.target.files[0]);
+                e.target.value = '';
+            }
+        });
+
+        window.addEventListener('dragenter', preventBrowserFileNavigation);
+        window.addEventListener('dragover', preventBrowserFileNavigation);
+        window.addEventListener('drop', preventBrowserFileNavigation);
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadDropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadDropZone.addEventListener(eventName, () => {
+                uploadDropZone.classList.add('border-blue-500', 'bg-blue-500/10');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadDropZone.addEventListener(eventName, () => {
+                uploadDropZone.classList.remove('border-blue-500', 'bg-blue-500/10');
+            });
+        });
+
+        uploadDropZone.addEventListener('drop', (e) => {
+            const file = e.dataTransfer && e.dataTransfer.files ? e.dataTransfer.files[0] : null;
+            if (file) {
+                loadUploadedFile(file);
+            }
+        });
+
+        btnLoadDefault.addEventListener('click', () => {
+            loadScreenshot(state.defaultSrc);
+            showToast("Varsayılan görsel koordinatları sıfırlandı!");
+        });
+
+        btnLoadFallback.addEventListener('click', () => {
+            switchToVectorMode();
+        });
+
+        zoomRange.addEventListener('input', () => {
+            applyZoom(parseFloat(zoomRange.value), true);
+        });
+
+        btnZoomOut.addEventListener('click', () => zoomBy(-0.1));
+        btnZoomIn.addEventListener('click', () => zoomBy(0.1));
+        btnZoomReset.addEventListener('click', () => applyZoom(1));
+        btnZoomFit.addEventListener('click', fitZoomToView);
+
+        canvasStage.addEventListener('wheel', (e) => {
+            if (!state.loaded) return;
+            e.preventDefault();
+            zoomBy(e.deltaY < 0 ? 0.1 : -0.1);
+        }, { passive: false });
+
+        btnDownload.addEventListener('click', () => {
+            const tempGuides = toggleGuides.checked;
+            toggleGuides.checked = false;
+            draw();
+
+            const link = document.createElement('a');
+            link.download = 'Pixelworld_LBS_Edited_1080p.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            link.click();
+
+            toggleGuides.checked = tempGuides;
+            draw();
+            showToast("Görseliniz HD kalitesinde başarıyla indirildi!");
+        });
+
+        btnCopyClipboard.addEventListener('click', () => {
+            const tempGuides = toggleGuides.checked;
+            toggleGuides.checked = false;
+            draw();
+
+            canvas.toBlob(blob => {
+                try {
+                    const item = new ClipboardItem({ "image/png": blob });
+                    navigator.clipboard.write([item]).then(() => {
+                        showToast("Düzenlenen görsel panoya kopyalandı!");
+                    }).catch(() => 
+                        showToast("Tarayıcı engelledi, indirme butonunu kullanın.", false);
+                    });
+                } catch (e) {
+                    showToast("Doğrudan kopyalama bu tarayıcıda engellendi.", false);
+                }
+            }, "image/png", 1.0);
+
+            toggleGuides.checked = tempGuides;
+            draw();
+        });
+
+        window.onload = function() {
+            updateSliderLabels();
+            loadScreenshot(state.defaultSrc);
+            applyZoom(1);
+        };
+    </script>
+</body>
+</html>
